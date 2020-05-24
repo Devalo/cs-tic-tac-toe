@@ -3,6 +3,7 @@ Tic Tac Toe Player
 """
 
 import math
+import random
 
 X = "X"
 O = "O"
@@ -59,10 +60,10 @@ def player(board):
         count_x = f_list.count("X")
         count_o = f_list.count("O")
         if count_x > count_o:
-            print("Computer turn")
+           # print("Computer turn")
             return O
         else:
-            print("Player turn")
+           # print("Player turn")
             return X
 
 
@@ -75,6 +76,16 @@ def actions(board):
     - Figures out which possible moves to do next
 
     """
+    av_moves = set()
+
+
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == None:
+                av_moves.add((i, j))
+    return av_moves
+
+
     raise NotImplementedError
 
 
@@ -92,7 +103,7 @@ def result(board, action):
         nboard[action[0]][action[1]] = player(board)
     else:
         raise ValueError("Already taken")
-    print("board from restult", nboard)
+    #print("board from restult", nboard)
     return nboard
 
 
@@ -101,7 +112,29 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    raise NotImplementedError
+    flatten = []
+    count_x = 0
+    count_o = 0
+
+    for cell in board:
+        for i in cell:
+            flatten.append(i)
+    count_x = flatten.count(X)
+    count_o = flatten.count(O)
+
+    for i in range(3):
+        if board[i][0] == board[i][1] == board[i][2]:
+            return board[i][0]
+        elif board[0][i] == board[1][i] == board[2][i] != None:
+            return board[0][i]
+        elif board[0][0] == board[1][1] == board[2][2] != None:
+            return board[0][0]
+        elif board[0][2] == board[1][1] == board[2][0] != None:
+            return board[0][2]
+
+
+    
+    #raise NotImplementedError
 
 
 def terminal(board):
@@ -110,6 +143,20 @@ def terminal(board):
 
     - takes the game board as input. If the game is over, returns true
     """
+
+    # Determine if anyone has 3 in a row
+    for i in range(3):
+        if board[i][0] == board[i][1] == board[i][2] != None:
+            return True
+        elif board[0][i] == board[1][i] == board[2][i] != None:
+            return True
+        elif board[0][0] == board[1][1] == board[2][2] != None:
+            return True
+        elif board[0][2] == board[1][1] == board[2][0] != None:
+            return True
+
+
+
     l_flatten = []
 
     # Flattens the board, and check if None is in any of the cells.
@@ -129,7 +176,7 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    
+
     raise NotImplementedError
 
 
@@ -139,9 +186,10 @@ def minimax(board):
     
     should call action to get every move possible for the current player
     """
-    print("From minimax")
-    print(board)
-    return (0,1)
+    moves = actions(board)
+
+
+    return random.choice(tuple(moves))
     raise NotImplementedError
 
 """
