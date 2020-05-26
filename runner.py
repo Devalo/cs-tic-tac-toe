@@ -38,7 +38,7 @@ while True:
         titleRect.center = ((width / 2), 50)
         screen.blit(title, titleRect)
 
-        # Draw buttons
+        # Draw ulteeeeee
         playXButton = pygame.Rect((width / 8), (height / 2), width / 4, 50)
         playX = mediumFont.render("Play as X", True, black)
         playXRect = playX.get_rect()

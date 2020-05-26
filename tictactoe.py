@@ -4,6 +4,7 @@ Tic Tac Toe Player
 
 import math
 import random
+import copy
 
 X = "X"
 O = "O"
@@ -49,9 +50,6 @@ def player(board):
             if i == X or i == O:
                 empty_board = False
 
-
-
-
     # If board is empty, return X as the first player
     # else, figure out who's turn is next, by counting how many X and O's on the game board.
     if empty_board == True:
@@ -60,14 +58,9 @@ def player(board):
         count_x = f_list.count("X")
         count_o = f_list.count("O")
         if count_x > count_o:
-           # print("Computer turn")
             return O
         else:
-           # print("Player turn")
             return X
-
-
-
 
 def actions(board):
     """
@@ -76,18 +69,13 @@ def actions(board):
     - Figures out which possible moves to do next
 
     """
-    av_moves = set()
-
+    available_moves = set()
 
     for i in range(3):
         for j in range(3):
             if board[i][j] == None:
-                av_moves.add((i, j))
-    return av_moves
-
-
-    raise NotImplementedError
-
+                available_moves.add((i, j))
+    return available_moves
 
 def result(board, action):
     """
@@ -98,44 +86,28 @@ def result(board, action):
       with the new action
     """
     
-    nboard = board.copy()
-    if nboard[action[0]][action[1]] == None:
-        nboard[action[0]][action[1]] = player(board)
-    else:
+    nboard = copy.deepcopy(board)
+
+    if nboard[action[0]][action[1]] != EMPTY:
         raise ValueError("Already taken")
-    #print("board from restult", nboard)
-    return nboard
-
-
+    else:
+        nboard[action[0]][action[1]] = player(nboard)
+        return nboard
 
 def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    flatten = []
-    count_x = 0
-    count_o = 0
-
-    for cell in board:
-        for i in cell:
-            flatten.append(i)
-    count_x = flatten.count(X)
-    count_o = flatten.count(O)
 
     for i in range(3):
         if board[i][0] == board[i][1] == board[i][2]:
             return board[i][0]
-        elif board[0][i] == board[1][i] == board[2][i] != None:
+        elif board[0][i] == board[1][i] == board[2][i]:
             return board[0][i]
-        elif board[0][0] == board[1][1] == board[2][2] != None:
+        elif board[0][0] == board[1][1] == board[2][2]:
             return board[0][0]
-        elif board[0][2] == board[1][1] == board[2][0] != None:
+        elif board[0][2] == board[1][1] == board[2][0]:
             return board[0][2]
-
-
-    
-    #raise NotImplementedError
-
 
 def terminal(board):
     """
@@ -156,7 +128,6 @@ def terminal(board):
             return True
 
 
-
     l_flatten = []
 
     # Flattens the board, and check if None is in any of the cells.
@@ -169,43 +140,57 @@ def terminal(board):
     if None not in l_flatten:
         return True
     return False
-    #raise NotImplementedError
-
 
 def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
 
-    raise NotImplementedError
-
+    if winner(board) == X:
+        return 1
+    elif winner(board) == O:
+        return -1
+    else:
+        return 0
 
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     
     should call action to get every move possible for the current player
+
     """
-    moves = actions(board)
 
+    playing = player(board)
+    
+    if playing == X:
+        v = -math.inf
+        for action in actions(board):
+            move = min_value(result(board, action))
+            if move > v:
+                v = move
+                best_move = action
+    else:
+        v = math.inf 
+        for action in actions(board):
+            move = max_value(result(board, action))
+            if move < v:
+                v = move
+                best_move = action
+    return best_move
 
-    return random.choice(tuple(moves))
-    raise NotImplementedError
-
-"""
-function MAX-VALUE(state):
-    if terminal(state):
-        return utility(state)
-    v = "-inf"
-    for action in actions(state):
-        v = max(v, min-value(result(state, action)))
+def max_value(board):
+    if terminal(board):
+        return utility(board)
+    v = -math.inf
+    for action in actions(board):
+        v = max(v, min_value(result(board, action)))
     return v
-
-function Min-Value(state):
-    if terminal(state):
-        return utility(state)
-    v = "inf"
-    for action in actions(state):
-        v = min(v, max-value(result(state, action)))
+    
+def min_value(board):
+    if terminal(board):
+        return utility(board)
+    v = math.inf
+    for action in actions(board):
+        v = min(v, max_value(result(board, action)))
     return v
-"""
